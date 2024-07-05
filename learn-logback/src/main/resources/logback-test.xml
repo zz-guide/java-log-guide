@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="false">
+    <import class="ch.qos.logback.core.ConsoleAppender"/>
+    <import class="ch.qos.logback.core.FileAppender"/>
+    <import class="ch.qos.logback.core.rolling.RollingFileAppender"/>
+    <import class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"/>
+
+    <!--定义变量-->
+    <property name="filePath" value="logs/a.log" />
+    <timestamp key="nowTime" datePattern="yyyy-MM-dd HH:mm:ss.SSS" />
+    <appender name="CONSOLE" class="ConsoleAppender">
+        <!--等同于二次过滤-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+            <!--匹配到就禁止-->
+            <onMatch>ACCEPT</onMatch>
+            <!--没匹配到就允许-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+<!--            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%-5level] [%logger{36}] [-%kvp]  [-%msg] [%n]</pattern>-->
+            <pattern>[${filePath}] [${nowTime}] [%c] [%msg]%n</pattern>
+            <chaset>UTF-8</chaset>
+<!--            <target>System.out</target>-->
+<!--            <target>System.err</target>-->
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="FileAppender">
+        <!--相对于子项目路径-->
+        <file>logs\a.log</file>
+        <!--默认是追加的，可以自定义-->
+        <append>false</append>
+        <!--开启的话，效率低，但是可以安全写入-->
+        <prudent>false</prudent>
+        <outputPatternAsHeader>false</outputPatternAsHeader>
+        <encoder>
+            <pattern>[%c] [%msg]%n</pattern>
+            <chaset>UTF-8</chaset>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING" class="RollingFileAppender">
+        <!--TimeBasedRollingPolicy, -->
+        <rollingPolicy class="SizeAndTimeBasedRollingPolicy">
+            <!--每天一个文件, 若当天的大小超出，则从0开始分隔-->
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <!--每个月一个文件-->
+<!--            <fileNamePattern>logs/app.%d{yyyy-MM}.log</fileNamePattern>-->
+            <!--最大保持30天-->
+<!--            <maxHistory>5</maxHistory>-->
+
+            <!--文件大小，字节为单位，序号从0开始-->
+            <maxFileSize>10</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%c] [%msg]%n</pattern>
+            <chaset>UTF-8</chaset>
+        </encoder>
+    </appender>
+
+    <logger name="123" level="all">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <!--只能打印比此处level级别高的日志-->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE" />
+<!--        <appender-ref ref="FILE" />-->
+<!--        <appender-ref ref="ROLLING" />-->
+    </root>
+</configuration>
